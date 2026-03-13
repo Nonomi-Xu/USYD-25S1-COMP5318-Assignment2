@@ -1,3 +1,6 @@
+MLP_G*.csv
+CNN_R*.csv
+
 # Jupyter
 .ipynb_checkpoints/
 
