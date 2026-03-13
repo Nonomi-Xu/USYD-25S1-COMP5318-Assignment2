@@ -16,3 +16,9 @@ venv/
 *.parquet
 *.duckdb
 
+# keras / tensorflow
+keras_tuning_results/
+*.h5
+*.keras
+*.ckpt
+checkpoint*
