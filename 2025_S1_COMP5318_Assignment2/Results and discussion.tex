@@ -1,0 +1,122 @@
+\subsection{Hyperparameter Tuning Results}
+
+ \noindent
+ 
+We conducted systematic hyperparameter tuning on Random Forest (RF), Multilayer Perceptron (MLP), and Convolutional
+ Neural Network (CNN) with the goal of finding the optimal configuration while balancing classification performance on the test set and the runtime.
+
+\bigskip
+
+ \noindent\textbf{Random Forest}
+ 
+ A grid search on combinations of n\_estimators $\in{10, 20, 30}$ and x\_leaf\_nodes $\in{10, 40, 70, 100}$ (a total of 12 combinations). Evaluate accuracy using 10 fold cross validation. The results are as follows:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccccc}
+\hline
+n\_estimators & max\_leaf\_nodes & Accuracy (\%) & F1 Macro & Duration (s) \\ \hline
+10            & 100              & 56.1            & 0.508    & 4.47        \\ \hline
+30            & 100              & 58.2          & 0.523    & 195.47      \\ \hline
+10            & 70              & 55            & 0.502    & 65.51        \\ \hline
+\end{tabular}
+\end{table}
+
+\noindent 
+
+Although a larger number of trees improves performance, the training time increases significantly (for example, 30 trees take nearly 200 seconds). Considering both accuracy and efficiency, we choose n\_estimators=10 and max\_leaf\_nodes=100 as the final hyperparameters.
+
+\bigskip
+
+ \noindent\textbf{MLP (Multilayer Perceptron)}
+
+ We first use RandomSearch  (30 trials) to narrow down the possible hyperparameter space, and then fine tune it in the high-performance region through GridSearch (36 trials) to obtain the optimal configuration as follows (The tuning parameters included the size of the two hidden layers, the activation function, and the learning rate.):
+
+ \begin{table}[h]
+\begin{tabular}{ccccccc}
+\hline
+Dense 1 &  Activation 1 & Dense 2 & Activation 2 & Learning Rate & Accuracy (\%) & Duration(s) 
+\\
+\hline
+100     & relu     & 200         & tanh         & 0.001         & 61.4          & 4.7      \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent 
+
+The optimization results show that using the relu activation function in the first hidden layer and combining it with a small learning rate (such as 0.001) can achieve the most stable training effect. Larger network structures (such as 200-200) may have similar performance, but their training costs are higher. This shows that a larger number of hidden layer units is not necessarily better, and a combination design may be better.
+
+\bigskip
+
+ \noindent\textbf{CNN (Convolutional Neural Network)}
+
+ CNN also adopts a two-stage tuning strategy. Initially randomly search 20 groups, and then use GridSearch to adjust the activation function and Dropout. The optimal configuration is as follows:
+
+ \begin{table}[h]
+\begin{tabular}{cccccc}
+\hline
+Activation 1 & Activation 2 & Dropout Rate & Learning Rate & Accuracy (\%) & Duration(s) 
+\\
+\hline
+relu     & relu         & 0.8         & 0.001         & 85          & 65.75      \\
+\hline
+\end{tabular}
+\end{table}
+
+\noindent
+
+CNN achieved significant performance improvement with sufficient regularization (Dropout=0.8). Compared with other activation functions, ReLU performs better in convolutional networks. 
+
+\noindent
+
+We can see that CNN performs significantly better than other models, but at the cost of significantly increased training time.
+
+\newpage
+
+\subsection{Final Model Comparison}
+
+\noindent
+
+Under the optimal hyperparameters, the performance of three models on the test set was evaluated, and the results are as follows:
+
+\begin{table}[h]
+\begin{tabular}{llllll}
+\hline
+Model         & Accuracy(\%) & F1 Macro & Loss  & Runtime (s) & Key Hyperparameters                                                                              \\ \hline
+Random Forest & 56.1         & 0.508    & -     & 4.47        & \begin{tabular}[c]{@{}l@{}}n\_estimators=10, \\ max\_leaf\_nodes=100\end{tabular}                \\ \hline
+MLP           & 61.4         & 0.596     & 1.23 & 4.7        & \begin{tabular}[c]{@{}l@{}}Dense(100, 200), \\ relu/tanh, \\ LR=0.001\end{tabular} \\ \hline
+CNN           & 85         & 0.844        & 0.422  & 65.75       & \begin{tabular}[c]{@{}l@{}}Conv(32, 64), relu/relu, \\ Dropout=0.8, \\ LR=0.001\end{tabular}          \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Discussion}
+
+\noindent
+
+CNN's performance is far ahead, which is in line with its theoretical advantage of effectively extracting spatial features from images. MLP has moderate performance, but it can still achieve certain results without convolutional structures. However, the RF model is limited by the input structure and performs weakly in image tasks.
+
+\noindent
+
+It is worth mentioning that we have introduced the F1 Macro metric. This is because in multi classification tasks, especially in medical image datasets like PathMNIST, there may be differences in the number of samples and classification difficulty for each category. Using only accuracy may mask the weaknesses of the model in a few classes or difficult categories. The F1 Macro is not affected by the number of class samples and can better reflect the overall performance of the model across all classes. Considering the practical research needs of medical scenarios, identifying minority classes (such as abnormal tissues) is often more critical than identifying normal classes, and F1 Macro can more accurately measure the clinical applicability of the model.
+
+\noindent
+
+Next, we will conduct an analysis on this indicator:
+
+\noindent
+
+The F1 Macro (0.508) of RF is lower than the accuracy, indicating that the model leans towards the main class and performs poorly in the minority classes.
+
+\noindent
+
+The F1 Macro (0.596) of MLP is closer to accuracy, indicating a more balanced performance across categories.
+
+\noindent
+
+The F1 Macro of CNN is as high as 0.844, indicating that it is not only accurate overall, but also performs evenly in each category, making it suitable for medical image classification tasks. And Although the confusion matrix is not listed, according to the F1 Macro, RF and MLP may have confusion in morphologically similar categories, while CNN is better at fine-grained classification.
+
+\noindent
+
+In summary, The training time of CNN is much higher than other models, but its performance improvement is enormous and it is worth investing in. Although MLP has a relatively simple structure, its performance is still acceptable, especially when computing resources are limited, it has certain practical value. Although Random Forest has fast training speed and is easy to interpret, its ability to model raw image data is weak, and even after PCA dimensionality reduction, its performance is still limited.
+

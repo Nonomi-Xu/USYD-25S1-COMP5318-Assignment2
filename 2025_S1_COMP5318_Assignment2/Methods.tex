@@ -1,0 +1,166 @@
+\subsection{Theory}
+
+\subsubsection{Random Forest Classifier}
+
+\indent
+
+At the beginning of the task, I selected the algorithm from the first 6 weeks, and decided to use Random Forest model. 
+
+Some simple algorithms may not perform well on high-dimensional complex problems. I only considered RF, KNN and SVM. The KNN algorithm performs poorly on high-dimensional data， because its dimensionality reduction process cannot well preserve high-dimensional features in cases with more dimensions. The SVM method should also be applicable to this task, but it may have higher training overhead than RF. Compared with these two black box models, RF may help me better understand the screening and selection of features.
+
+The definition of ensemble learning is to complete the learning task by building multiple learners. Ensemble learning can be roughly divided into two categories: Methods with strong sequential relationships between learners, and Methods that do not rely on sequential relationships and can be processed in parallel. The classic method of the former one is Boosting, while the most classic method for the later one is Bagging and Random Forest.
+
+Bagging is based on the bootstrap sampling method. We give a dataset with $m$ samples, then randomly take a sample and put it into the sampling set then put it back. After $m$ times operations, we obtain a sampling set containing $m$ samples. From $\lim_{m\rightarrow\infty}(1-\frac{1}{m})^m = \frac{1}{e} \approx 0.368$, we know that about $63.2\%$ of the initial data will be selected.
+
+We sample $T$ sampling sets containing $m$ training samples. We train a base learner for each sample set. Then, we use a simple voting method for classification tasks and a simple averaging method for regression tasks.
+
+In this process, the Random Forest Classifier is that we use the decision tree as the base learner and introduce random attribute selection to the algorithm. The traditional decision tree selects the best attribute from $d$ attributes when dividing attributes. The Random Forest method selects a subset of $k\,(k\leq d)$ attributes from the attribute set, then select an optimal attribute from this subset for partitioning. In general, the recommended value is $k\,=\,\log_{2}d$ \cite{breiman2001random}.
+
+\subsubsection{Feedforward multilayer perceptron neural network}
+
+\noindent
+
+In a neural network, the perception layer consists of two layers of neurons. The input layer receives external signals and passes them to the output layer. The output layer is the M-P neuron \cite{mcculloch1943logical}. Simple perceptrons can only solve linearly separable problems \cite{minsky1969introduction}. Multilayer perceptron are needed for linearly inseparable problems. We add a layer of neurons between the input layer and the output layer, namely the hidden layer. Both the hidden layer and the output layer are functional neurons with activation functions.
+
+Furthermore, we call a general neural network 'multi-layer feedforward neural networks'. In this network, each layer of neurons is interconnected with all neurons in the next layer and has no connection with neurons in the same layer. To adapt and train this network, the BP (error BackPropagation) algorithm is a more appropriate choice.
+
+In BP algorithm, we define the training test is $D = \{(\bm{x}_1,\bm{y}_1),...,(\bm{x}_m,\bm{y}_m)\}, \bm{x}_i\in\mathbb{R}^d, \bm{y}_i\in\mathbb{R}^l$. That is, the input vector contains $d$ dimensions and the output is a $l$ dimensional real-valued vector. We define the threshold of the $j-th$ neuron in the output layer is $\theta_j$, the threshold of the $h-th$ neuron in the hidden layer is $\gamma_h$. The connection weight between the $i-th$ neuron in the input layer and the $h-th$ neuron in the hidden layer is $v_{ih}$. The connection weight between the $h-th$ neuron in the hidden layer and the $j-th$ neuron in the output layer is $w_{hj}$. Then the input received by the $h-th$ hidden layer neuron is $\alpha_h = \sum_{i = 1}^{d}v_{ih}x_{i}$. The input received by the $j-th$ output layer neuron is $\beta_j = \sum_{h = 1}^{q}w_{hj}b_{h}$. Here $q$ is the number of hidden layer neuron, $b_h$ is the output of $h-th$ hidden neuron. 
+
+Then for the training sample $(\bm{x_k,\bm{y}_k})$, we assume that the final output is $\hat{\bm{y}_k} = (\hat{y_1}^k,...,\hat{y_l}^k) = f(\beta_j - \theta_j)$. We define the mean squared error on the network sample $(\bm{x_k,\bm{y}_k})$ is $E_k = \frac{1}{2}\sum_{j=1}^l(\hat{y_j}^k - y_j^k)^2$. 
+
+In subsequent calculations, we use the generalized perceptron learning rule to estimate the parameters in each iteration. The update estimate of any parameter $v$ is $v \leftarrow v + \Delta v$. 
+
+We take 'Sigmoid' activation as the sample. It has a special attribute $f'(x) = f(x)(1-f(x))$. We suppose the learning rate is $\eta$. For the network $(\bm{x_k,\bm{y}_k})$ and its mean squared error $E_k$, we calculate $\Delta w_{hj} = -\eta\frac{\partial E_k}{\partial w_{hj}}$. Then we know from the signal transmission process that:
+
+\begin{equation}
+    \frac{\partial E_k}{\partial w_{hj}} = \frac{\partial E_k}{\partial\hat{y_j}^k}\cdot\frac{\partial\hat{y_j}^k}{\partial\beta_j}\cdot\frac{\partial\beta_j}{\partial w_{hj}}
+\end{equation}
+
+From the mean squared error equation, we define $g_j$ that $g_j = -\frac{\partial E_k}{\partial\hat{y_j}^k}\cdot\frac{\partial\hat{y_j}^k}{\partial\beta_j}$. 
+
+\begin{equation*}
+    g_j = -\frac{\partial E_k}{\partial\hat{y_j}^k}\cdot\frac{\partial\hat{y_j}^k}{\partial\beta_j} = -(\hat{y_j}^k - y_j^k)f'(\beta_j - \theta_j) = \hat{y_j}^k(1-\hat{y_j}^k)(y_j^k - \hat{y_j}^k)
+\end{equation*}
+
+Substituting the various formulas forward, we finally get the updated formula for $\Delta w_{hj} = \eta g_j b_h$. Similarly, we have all calculation:
+
+\begin{align*}
+\Delta w_{hj} &= \eta g_j b_h \\
+\Delta\theta_j &= -\eta g_j \\
+\Delta v_{ih} &= \eta e_h x_i\\
+\Delta\gamma_h &=-\eta e_h
+\end{align*}
+
+Here $e_h = -\frac{\partial E_k}{\partial b_h}\cdot\frac{\partial b_h}{\partial\alpha_h} = b_h(1-b_h)\sum_{j = 1}^l w_{hj}g_j$.
+
+The final goal of BP algorithm is to minimize cumulative error $E = \frac{1}{m}\sum_{k = 1}^m E_k$.
+
+\subsubsection{Convolutional neural network}
+
+\indent
+
+Convolutional neural network is a typical example of deep learning and has good application in image recognition. It reduces the training cost through the weight sharing strategy based on the neural network.
+
+We take the handwritten digit recognition task in the tutorial and its metadata \cite{lecun1995convolutional} as an example. Here We input a $32\times 32$ handwritten digit image, and hope to output its recognition results. CNN contains multiple 'convolutional layers' and 'pooling layers' to process the input vector. CNN achieves mapping with target output in the last connection layer.
+
+Each convolutional layer contains multiple feature maps. A feature map is a plane composed of multiple neurons. It extracts a feature of the input through a convolution filter. For example, the first convolutional layer consists of 6 feature maps. Each feature map is a $28\times 28$ neuron matrix. Each neuron is responsible for extracting features from the $5\times5$ area through the convolution filter. The pooling layer exists to analyze the local features extracted by the convolutional layer and retain useful information. The pooling layer in the example has $6$ $14\times14$ feature maps, which connects to $2\times2$ neighborhood corresponding to feature map of the former layer.
+
+After two convolutional layers and a pooling layer, the input vector is mapped to a 120-dimensional feature vector. Finally, the recognition task is completed through a connection layer and output layer consisting of 84 neurons.
+
+CNN model can also be trained through BP algorithm
+
+\subsection{Strengths and weaknesses}
+
+\subsubsection{Random Forest Classifier}
+
+\noindent\textbf{Strength}
+
+Compared with deep learning methods that are more suitable for image recognition tasks, random forests can achieve $40\%$ accuracy without a lot of parameter tuning. This is more conducive to the initial understanding and recognition tasks of the image and does not require a lot of time for parameter adjustment. 
+
+After principal component analysis, RF models these more discriminative features, which can help us identify the main features and secondary features. In my opinion, if the feature engineering step does not use PCA method, but uses CNN convolution pooling method, random forest method will get better results.
+
+\bigskip
+
+\noindent\textbf{Weakness}
+
+If we directly use the 784 dimensions of the original data for RF modeling, the training cost is very high and the accuracy is not high. This is because RF methods are not well suited for high-dimensional data.
+
+Obviously, RF cannot take into account the image features of the original data. Its processing of data is only to expand the $28\times28\times3$ data into 784 dimensions and then filter them, which cannot reflect the characteristics of the image at all. Academically, this method destroys the image features of the original data.
+
+Compared with deep learning methods that are more suitable for image methods, the RF method will reduce the accuracy when facing image rotation, scaling, and color disturbance.
+
+\subsubsection{Feedforward multilayer perceptron neural network}
+
+\noindent\textbf{Strength}
+
+The MLP method is a more advanced deep learning method. Through diverse neuron layers and activation functions, its ability to train complex input and output is much stronger than that of ordinary models, especially the application of 'Relu' function.
+
+Compared to the feature preprocessing of random forest, MLP does not require this step. The MLP method can automatically extract raw image data as input and extract features. MLP takes into account the relationship between pixels through the connection relationship between multiple layers to a certain extent. This is another improvement compared to the RF method that completely destroys the pixel structure.
+
+\bigskip
+
+\noindent\textbf{Weakness}
+
+Similar to the RF method, the MLP method does not fully consider the structure of the image data. It considers some features of image data, but does not consider the features of 'edge', 'texture', or 'shape'. It has higher training cost and accuracy than RF, but it is not the best choice for image recognition tasks.
+
+The MLP method also does not take into account the translation, rotation, and color perturbations of image features. It exhibits poor generalization ability when faced with more diverse data.
+
+Generally speaking, when using the MLP method for $784$ dimensional data. In the first layer, a large number of parameters need to be prepared to connect various dimensions. This will eventually lead to overfitting, and the MLP method itself does not have the ability to solve overfitting. In our actual use of the MLP method, overfitting did occur.
+
+\subsubsection{Convolutional neural network}
+
+\noindent\textbf{Strength}
+
+Compared with RF and MLP methods, CNN can effectively extract local features of images. For example, the CNN method can better extract the image edge, texture, and shape recognition problems that the MLP method cannot solve. For the translation, rotation and color perturbation of image features, the CNN method effectively reduces their impact by adding randomness.
+
+In more theoretical terms, the CNN method uses $2\times2$ or $3\times3$ matrix data as input for analysis. This analysis method effectively considers the relationship between the vertical and oblique angles of the image pixels. Correspondingly, the extracted features are more representative of the image. Obviously, both RF and MLP methods will lose information in these two directions.
+
+During the training process, the CNN method reduces the training cost by averaging the weights of each local feature. The reuse of parameters also reduces the storage space and number of parameters, improving the calculation efficiency.
+
+The CNN method effectively avoids overfitting of MLP by randomly abandoning certain training data. This is adjusted in the model via 'Dropout' hyperparameter.
+
+\bigskip
+
+\noindent\textbf{Weakness}
+
+The CNN method performs very well in image recognition tasks, and it is difficult to find any particularly obvious shortcomings.
+
+It may be obvious that the CNN approach significantly increases the training cost. Whether it is the training time of a single model or the average time of overall parameter adjustment, the CNN method is much longer than the RF and MLP methods. The use of GPU is more appropriate for CNN methods.
+
+CNN is also a black box model, and its model explanation is also weaker than RF. But I personally think that such weakness is not important compared to its accuracy.
+
+\subsection{Architecture and hyperparameters}
+
+\indent
+
+We split the training set into a training set and a validation set, with the training set accounting for $90\%$ of the size.
+
+\subsubsection{Random Forest Classifier}
+
+\indent
+
+Here we simply modified the RF hyperparameter retrieval equation in Assignment 1. We use accuracy and f1 score to judge the quality of random forest model. During each run with each set of hyperparameters, we record its running time. Finally, we output a ’pandas.DataFrame' table containing all the above features and hyperparameter combinations. We then select a model that takes into account both accuracy and runtime for the test set.
+
+The hyperparameter combination chosen here consists of two hyperparameter. 'n\_estimators' has $3$ values choice: $10, 20, 30$. 'max\_leaf\_nodes' has $4$ values choice: $10, 40, 70, 100$. Where 'n\_estimators' refers to the number of decision trees, that is, how many learners are integrated in the ensemble learning. 'max\_leaf\_nodes' limits the maximum number of leaf branches of each decision tree to avoid overfitting and large computational overhead. Generally speaking, increasing these two values will improve the accuracy and computational cost of the model. Too high parameter values of the two will also lead to overfitting. In terms of search method, we chose to perform a grid search on $4\times4 = 16$ hyperparameter combinations, because $16$ is not a large number.
+
+\subsubsection{Feedforward multilayer perceptron neural network}
+
+\indent
+
+In the neural network, we first rewrote the ’run\_trial' method to add a time record for each trial. We record this value in the hyperparameters list as a pseudo-hyperparameter to be output in the 'keras\_tuner' framework. The 'GridResearch' and 'RandomResearch' of 'Keras\_tuner' framework are rewrote as 'Time\_GridSearch' and 'Time\_RandomResearch'.
+
+Then I built the MLP model with $2$ layers. Here we choose hyperparameter includes the units and the activation function type of both $2$ layers, and the learning rate. The number of units includes $100,200$, and the type of activation function includes 'relu','tanh' and 'sigmoid'. The learning rate has $3$ choices: $0.1,0.01, 0.001$. ‘Units' refers to the number of hidden neurons in each layer. It is used to control the model's fitting expressiveness. A higher 'units' value can have stronger fitting ability and higher training cost, but too high a value can also lead to overfitting. 'Activation' function type refers to the calculation method of the activation function in each layer, which mainly introduces nonlinear methods in the calculation to enhance the model's expressiveness. The three activation functions have their own characteristics. In neural networks, 'relu' is more commonly used. 'Learning\_rate' controls the step size of the gradient update, and a smaller 'Learning\_rate' makes the training more efficient. However, a too small 'Learning\_rate' may lead to a local optimum. A too large 'Learning\_rate' may cause the training to skip the optimal point.
+
+Combining all the above hyperparameter combinations, we have a total of $108$ hyperparameter combinations. The training time for these combinations is very long, so we chose to first randomly search for $30$ trials. The search results are recorded in a table and sorted by accuracy. Among all combinations with high accuracy, we determined that $learning rate = 0.001$ is constant. So we lock $learning rate = 0.001$ and grid search all hyperparameter combinations and regenerate a new table. Here we comprehensively select the hyperparameter combination with high accuracy and short running time from the hyperparameter combination with higher accuracy of new table.
+
+\subsubsection{Convolutional neural network}
+
+\indent
+
+In the CNN method, because it is derived from the classic neural network method, we still use the 'GridResearch' and 'RandomResearch' method we rewrote before.
+
+Then I built the CNN model with $2$ sampling layers with $2$ pooling layers. The first sampling layer use $32$ kernels and the second one use $64$ kernels. The hyperparameter we chose is the activation function of $2$ sampling layers, the dropout rate and the learning rate. The activation function has $3$ choices, 'relu', 'sigmoid' and 'tanh'. The dropout rate has $3$ values, $0.2,0.5,0.8$. The learning rate has $3$ values, $0.1,0.01,0.001$. Similarly, 'Activation' function type refers to the calculation method of the activation function in each layer, which mainly introduces nonlinear methods in the calculation to enhance the model's expressiveness. And 'Learning\_rate' controls the step size of the gradient update. Different from the MLP method, the CNN method introduces 'Dropout' rate. 'Dropout' rate can randomly discard some neurons during training, making feature learning more decentralized. He can effectively reduce the degree of overfitting of the model through this method, but too high a loss rate may also lead to underfitting.
+
+The search method is also similar to the operation of the MLP method. There are $81$ hyperparameter combinations for CNN. We first randomly searched $30$ of them. The results of random search are sorted by accuracy into a table. We found that in the combination with high accuracy, it can be determined 'Activation = 'relu'' and 'learning rate = 0.001'. We locked these two parameters and then did a grid search on the remaining hyperparameter combinations and got a new table. Finally, we comprehensively considered the accuracy and running time to determine the hyperparameter combination used by the model.
+
+\noindent

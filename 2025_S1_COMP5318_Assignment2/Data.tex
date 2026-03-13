@@ -1,0 +1,61 @@
+\subsection{Data description and exploration}
+
+\noindent 
+
+The dataset used in this study is PathMNIST, which is a subset of the MedMNIST series. This dataset contains microscopic images of tissue sections from human colorectal cancer patients, which were processed and cropped into uniform sized $28\times28$ RGB color images. The entire dataset contains $9$ different types of tissues, including normal tissues and different types of diseased tissues.
+
+In this experiment, the dataset was divided into a training set with $32000$ images and a test set with $8000$ images. Each image corresponds to a label, which ranges from integers $0$ to $8$ and represents $9$ categories. 
+
+After exploratory analysis of the training data, we found significant differences in morphology and texture among images within the same category, especially in tumor related tissues.
+
+Secondly, the color information of the image preserves important features. PathMNIST images preserve the details of tissue structure through staining, therefore RGB three channel information plays an important role in distinguishing categories. Grayscale processing may not be necessary during the research process.
+
+And there are slight differences in the number of images in each category. For example, category $8$ has a slightly higher proportion and category $6$ has fewer, but the overall distribution is relatively balanced. We compared the class distributions of the training and testing sets using Counter to ensure the fairness of the model training.
+
+In addition, we also visualized several image samples for each category separately to observe image quality and category separability. This process helped us confirm the recognizability of image features and the feasibility of subsequent model design.
+
+\subsection{Pre-processing}
+
+\indent 
+
+To improve the efficiency and accuracy of model training, we performed the following pre-processing steps on the raw data:
+
+\medskip
+
+\noindent\textbf{Normalization processing}
+
+All image pixel values were originally within the range of $\,0-255$. We scale it to the [0,1] interval by dividing the pixel value by $255$. This can avoid the problem of gradients being too small in neural networks, accelerate convergence, and improve numerical stability.
+
+\medskip
+
+\noindent\textbf{Standardization processing}
+
+In some models (such as MLP), we further applied StandardScaler to standardize each sample, making its feature mean $0$ and variance $1$. This helps improve the training efficiency of traditional machine learning models.
+
+\medskip
+
+\noindent\textbf{Flattening operation}
+
+For traditional machine learning algorithms such as random forests, we flatten the image from a 3D structure ($28\times28\times3$) into a one-dimensional vector to meet the input format requirements of the model.
+
+\medskip
+
+\noindent\textbf{Sample Visualization}
+
+Randomly selecting images for visualization and displaying image samples for each category can help understand the characteristics of the images and the difficulty of model classification tasks.
+
+\medskip
+
+\noindent\textbf{Preserve color information}
+
+Although converting images to grayscale can reduce input dimensionality, due to the important diagnostic significance of color in tissue stained images, we choose to preserve the original RGB channel information, which is particularly beneficial for feature extraction in CNN models.
+
+\medskip
+
+\noindent\textbf{Stratified Split of Data}
+
+When dividing the training set and validation set, the $strategy = y$ method is used to ensure that the class distribution in each batch of training data remains consistent, thereby avoiding the model from leaning towards a certain class.
+
+\bigskip
+
+In summary, the pre-processing method we adopted is standard and reasonable in medical image classification, considering both the numerical stability of the model input and preserving important color and spatial structure information in medical images.

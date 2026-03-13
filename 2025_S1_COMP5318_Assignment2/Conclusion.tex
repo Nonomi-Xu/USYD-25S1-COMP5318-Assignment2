@@ -1,0 +1,61 @@
+
+\noindent 
+
+In this assignment, we implemented and evaluated three machine learning models on the PathMNIST medical image classification task: Random Forest, Multi Layer Perceptron (MLP), and Convolutional Neural Network (CNN). We conducted a comprehensive comparison of various models from multiple dimensions, including accuracy, F1 macro average score, runtime, and actual applicability, through system hyperparameter tuning.
+We have come to the following conclusion:
+
+\noindent 
+
+The CNN model achieved the best performance, with an accuracy of 85.0\% and an F1 Macro of 0.844. It demonstrates its powerful ability to extract spatial features from images and maintain a relatively balanced classification performance among various types of tissues. However, its high accuracy comes at the cost of higher training time and model complexity.
+
+\noindent 
+
+The MLP model achieved a moderate level of performance with an accuracy of 61.4\% and an F1 Macro of 0.596, achieving a good balance between training efficiency and performance. Its fully connected structure has certain nonlinear modeling capabilities, but lacks spatial structure extraction, resulting in limited overall effectiveness.
+
+\noindent 
+
+Although the RF model has strong interpretability and fast training speed, its accuracy is the lowest, with an F1 Macro of only 0.508, indicating a significant disadvantage in image classification tasks. Even with PCA dimensionality reduction processing, RF still cannot effectively utilize spatial information in the image.
+
+\noindent 
+
+Although a comprehensive comparison was made among the three models in this experiment, we also realized that there are some limitations:
+
+\noindent 
+
+The CNN model has a relatively basic structure, using only two layers of convolution and fully connected output. In fact, there are many more complex or better performing architectures that can be tried, such as ResNet, DenseNet, etc.
+
+\noindent 
+
+Data augmentation is not necessary. If common enhancement methods such as image rotation and flipping are added, it may improve the robustness of the model on different morphological tissues.
+
+\noindent 
+
+No other evaluations were conducted beyond the classification, such as the model's performance on uncertain samples, output confidence, and whether it would be overconfident.
+
+\noindent 
+
+The training data distribution was directly divided using default partitioning, without specifically balancing the proportion between classes or performing more specialized processing on minority classes, which may result in the model focusing more on the main class.
+
+\noindent 
+
+For the upcoming in-depth future work, we have summarized the following points:
+
+\noindent 
+
+Try transfer learning: directly use pre trained models (such as ResNet) to extract image features, and then fine tune them with classification layers on top. This not only speeds up training, but often performs better on small datasets, which is particularly useful for medical image tasks.
+
+\noindent 
+
+Do some data augmentation, such as image flipping, random cropping, color perturbation, etc., which can not only expand the sample, but also make the model more robust to small changes in the image, and more reliable in practical deployment.
+
+\noindent 
+
+Analyze specific errors, such as generating confusion matrices, to see which categories are prone to errors in the model, and whether there are any two categories that are particularly prone to confusion? These pieces of information can help us improve the model structure or loss function design.
+
+\noindent 
+
+Considering model deployment efficiency: CNN performs well, but the training time is long. We can try lightweight architectures, such as MobileNet and EfficientNet, which can give consideration to accuracy and speed and are more suitable for embedded or edge computing devices.
+
+\noindent 
+
+Attempt to merge multiple models: Although only a single model was compared this time, in the future, we can consider complementing the results of RF, MLP, and CNN, such as using voting or stacking, to make the overall classification more stable.

@@ -1,0 +1,57 @@
+\documentclass[12pt]{article}
+\usepackage[a4paper, margin=20mm, marginparwidth = 1.8cm]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{fontspec}
+\usepackage{booktabs}
+
+\usepackage{url}
+\usepackage{appendix}
+\usepackage{subfigure}
+\usepackage{bm}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+\linespread{1.15}
+
+\setmainfont{Times New Roman}
+\pagenumbering{roman}
+
+\begin{document}
+\input{title}
+
+\section{Introduction}
+\pagenumbering{arabic}
+\input{Introduction}
+\pagebreak
+
+\section{Data}
+\input{Data}
+\pagebreak
+
+\section{Methods}
+\input{Methods}
+\pagebreak
+
+\section{Results and discussion}
+\input{Results and discussion}
+\pagebreak
+
+\section{Conclusion}
+\input{Conclusion}
+\pagebreak
+
+\section{Reflection}
+\input{Reflection}
+\pagebreak
+
+\bibliography{bib.bib}
+\bibliographystyle{ieeetr}
+
+\pagebreak
+
+\section*{Appendix}
+\input{appendix}
+
+
+\end{document}
