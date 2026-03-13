@@ -1,5 +1,5 @@
-MLP_G*.csv
-CNN_R*.csv
+MLP_*.csv
+CNN_*.csv
 
 # Jupyter
 .ipynb_checkpoints/
